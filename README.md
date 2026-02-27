@@ -2,16 +2,16 @@
 
 *AI-Powered Java Code Optimization Platform*
 
-Transform raw code into production-grade Java using large language models.
+*Transform raw code into production-grade Java using large language models.*
 
 ## What is CodeRefine?
 
-CodeRefine is an AI-driven code transformation platform that converts unstructured or inefficient source code into clean, optimized, production-ready Java.
+-*CodeRefine is an AI-driven code transformation platform that converts unstructured or inefficient source code into clean, optimized, production-ready Java.*
 
-Built on top of LLaMA 3.3 70B and powered by the ultra-fast inference infrastructure from Groq, CodeRefine acts like a senior software engineer reviewing and upgrading your code in seconds.
+-*Built on top of LLaMA 3.3 70B and powered by the ultra-fast inference infrastructure from Groq, CodeRefine acts like a senior software engineer reviewing and upgrading your code in seconds.*
 
-This is not just code translation.
-This is automated professional refactoring.
+-*This is not just code translation.*
+-*This is automated professional refactoring.*
 
 ## Vision
 
