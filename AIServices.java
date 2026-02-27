@@ -8,7 +8,7 @@ public class AIServices {
     // Groq API endpoint
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-    //  Put your Groq API key here
+   
     private static final String API_KEY = "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";
 
     public String refineCode(String userCode) {
@@ -89,7 +89,7 @@ public class AIServices {
                 .replace("\n", "\\n");
     }
 
-    // Extract AI response without Gson
+    
     private String extractContent(String json) {
         try {
             String key = "\"content\":\"";
