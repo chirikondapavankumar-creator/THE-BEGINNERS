@@ -5,61 +5,29 @@ import java.net.http.HttpResponse;
 
 public class AIServices {
 
-    // Groq API endpoint
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
-
-   
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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"; 
 
     public String refineCode(String userCode) {
-
         try {
             HttpClient client = HttpClient.newHttpClient();
 
-            String prompt = """
-You are a senior Java architect.
+            String prompt = "You are a senior Java architect.\n"
+                + "Refactor the following code to industry-grade Java.\n"
+                + "Return ONLY valid Java code, no markdown, no backticks.\n"
+                + "After the code, add this line exactly:\n"
+                + "-----IMPROVEMENTS MADE-----\n"
+                + "Then list the improvements.\n\n"
+                + "Code to refactor:\n" + userCode;
 
-Your task is to refactor the provided Java code to industry-grade quality
-while strictly preserving its functional behavior.
-
-MANDATORY RULES:
-
-1. Do NOT change numeric literals.
-2. Do NOT modify loop conditions unless logically equivalent.
-3. Preserve program behavior exactly.
-4. Ensure the code compiles.
-5. Improve structure, readability, and maintainability.
-6. Apply SOLID principles where applicable.
-7. Replace inefficient algorithms only if behavior remains identical.
-8. Add input validation.
-9. Add meaningful comments.
-10. Use professional naming conventions.
-
-Before returning the final code:
-- Verify that all original numeric constants still exist.
-- Verify that arithmetic logic is preserved.
-
-Return only valid Java code.
-After the code, add:
-
------IMPROVEMENTS MADE-----
-
-List structural, architectural, and performance improvements.
-
-Now refactor:
-
-""" + userCode;
-
-            String requestBody = """
-                    {
-                      "model": "llama-3.3-70b-versatile",
-                      "messages": [
-                        {"role":"system","content":"You are an expert Java code optimizer."},
-                        {"role":"user","content":"%s"}
-                      ],
-                      "temperature": 0.2
-                    }
-                    """.formatted(escapeJson(prompt));
+            String requestBody = "{"
+                + "\"model\":\"llama-3.3-70b-versatile\","
+                + "\"messages\":["
+                + "{\"role\":\"system\",\"content\":\"You are an expert Java code optimizer. Return plain Java only, no markdown.\"},"
+                + "{\"role\":\"user\",\"content\":\"" + escapeJson(prompt) + "\"}"
+                + "],"
+                + "\"temperature\":0.2"
+                + "}";
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(API_URL))
@@ -70,6 +38,13 @@ Now refactor:
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            System.out.println("Groq status: " + response.statusCode());
+
+            if (response.statusCode() != 200) {
+                System.err.println("Groq error: " + response.body());
+                return "API error " + response.statusCode();
+            }
+
             return extractContent(response.body());
 
         } catch (Exception e) {
@@ -78,33 +53,55 @@ Now refactor:
         }
     }
 
-    // Escape JSON characters
     private String escapeJson(String text) {
-        return text.replace("\\", "\\\\")
+        return text
+                .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
-                .replace("\n", "\\n");
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
-    
     private String extractContent(String json) {
         try {
-            String key = "\"content\":\"";
-            int start = json.indexOf(key);
-            if (start == -1)
-                return json;
+            String key = "\"content\":";
+            int keyIdx = json.indexOf(key);
+            if (keyIdx == -1) {
+                System.err.println("No content key found in: " + json);
+                return "Error: unexpected API response.";
+            }
 
-            start += key.length();
+            int i = keyIdx + key.length();
+            while (i < json.length() && json.charAt(i) != '"') i++;
+            if (i >= json.length()) return "Error: malformed response.";
+            i++; // skip opening quote
 
-            int end = json.indexOf("\"}", start);
-            if (end == -1)
-                return json;
+            StringBuilder sb = new StringBuilder();
+            while (i < json.length()) {
+                char c = json.charAt(i);
+                if (c == '\\' && i + 1 < json.length()) {
+                    char next = json.charAt(i + 1);
+                    switch (next) {
+                        case '"'  -> sb.append('"');
+                        case '\\' -> sb.append('\\');
+                        case 'n'  -> sb.append('\n');
+                        case 'r'  -> sb.append('\r');
+                        case 't'  -> sb.append('\t');
+                        default   -> sb.append(next);
+                    }
+                    i += 2;
+                } else if (c == '"') {
+                    break;
+                } else {
+                    sb.append(c);
+                    i++;
+                }
+            }
+            return sb.toString().trim();
 
-            String result = json.substring(start, end);
-
-            return result.replace("\\n", "\n")
-                    .replace("\\\"", "\"");
         } catch (Exception e) {
-            return json;
+            e.printStackTrace();
+            return "Error parsing response: " + e.getMessage();
         }
     }
 }
