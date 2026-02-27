@@ -17,42 +17,38 @@ public class AIServices {
             HttpClient client = HttpClient.newHttpClient();
 
             String prompt = """
-                    You are a senior software engineer working at a top-tier tech company.
+You are a senior Java architect.
 
-                    Your task is to refactor and optimize the given Java code to production-grade quality.
+Your task is to refactor the provided Java code to industry-grade quality
+while strictly preserving its functional behavior.
 
-                    STRICT REQUIREMENTS:
+MANDATORY RULES:
 
-                    1. Follow clean code principles.
-                    2. Improve time and space complexity wherever possible.
-                    3. Use meaningful and professional variable/method names.
-                    4. Apply proper object-oriented design if applicable.
-                    5. Separate concerns into methods.
-                    6. Add industry-level comments explaining logic.
-                    7. Follow Java best practices.
-                    8. Ensure readability and maintainability.
-                    9. Remove redundant logic.
-                    10. Handle edge cases if applicable.
+1. Do NOT change numeric literals.
+2. Do NOT modify loop conditions unless logically equivalent.
+3. Preserve program behavior exactly.
+4. Ensure the code compiles.
+5. Improve structure, readability, and maintainability.
+6. Apply SOLID principles where applicable.
+7. Replace inefficient algorithms only if behavior remains identical.
+8. Add input validation.
+9. Add meaningful comments.
+10. Use professional naming conventions.
 
-                    OUTPUT FORMAT RULES:
+Before returning the final code:
+- Verify that all original numeric constants still exist.
+- Verify that arithmetic logic is preserved.
 
-                    - Return only valid Java code.
-                    - No markdown fences.
-                    - No explanations before the code.
-                    - Code must compile.
-                    - After the full code, add a section:
+Return only valid Java code.
+After the code, add:
 
-                    -----IMPROVEMENTS MADE-----
+-----IMPROVEMENTS MADE-----
 
-                    List bullet points explaining:
-                    - What was optimized
-                    - What structural improvements were made
-                    - What complexity improvements were applied
-                    - What clean code principles were implemented
+List structural, architectural, and performance improvements.
 
-                    Now refactor the following code:
+Now refactor:
 
-                    """ + userCode;
+""" + userCode;
 
             String requestBody = """
                     {
