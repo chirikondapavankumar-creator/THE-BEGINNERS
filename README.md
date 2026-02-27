@@ -15,19 +15,19 @@
 
 ## Vision
 
-To build an intelligent developer assistant that:
+### *To build an intelligent developer assistant that:*
 
-Automatically upgrades code quality
+- Automatically upgrades code quality
 
-Enforces clean architecture
+- Enforces clean architecture
 
-Optimizes performance
+- Optimizes performance
 
-Applies best practices
+- Applies best practices
 
-Educates developers through structured improvement feedback
+- Educates developers through structured improvement feedback
 
-CodeRefine aims to reduce technical debt before it even reaches production.
+- CodeRefine aims to reduce technical debt before it even reaches production.
 
 ### Key Features
 ## Multi-Language Input → Java Output
@@ -37,29 +37,29 @@ Receive optimized Java.
 
 ## AI-Driven Refactoring
 
-Uses LLaMA 3.3 70B via Groq for high-quality structured transformations.
+- *Uses LLaMA 3.3 70B via Groq for high-quality structured transformations.*
 
 ## Performance Optimization
 
-Improves time complexity and removes redundant logic.
+- *Improves time complexity and removes redundant logic.*
 
 ## Clean Architecture Enforcement
 
-Applies:
+###Applies:
 
--Proper OOP design
+- *Proper OOP design*
 
--Method separation
+- *Method separation*
 
--Meaningful naming
+- *Meaningful naming*
 
--Edge case handling
+- *Edge case handling*
 
 ## Structured Improvement Report
 
-Every refinement includes a detailed:
+**Every refinement includes a detailed:**
 
------IMPROVEMENTS MADE-----
+**-----IMPROVEMENTS MADE-----**
 
 ## Explaining:
 
@@ -96,61 +96,61 @@ Every refinement includes a detailed:
         ▼
 5.LLaMA 3.3 70B Model
 
-_The architecture follows a clean separation of concerns:_
+## _The architecture follows a clean separation of concerns:_
 
-Presentation Layer → index-1.html
+- Presentation Layer → index-1.html
 
-API Layer → Server.java
+- API Layer → Server.java
 
-AI Integration Layer → AIServices.java
+-  AI Integration Layer → AIServices.java
 
 ## How It Works
 
-User pastes raw code into the editor
+- User pastes raw code into the editor
 
-Frontend sends a POST request to /refine
+- Frontend sends a POST request to /refine
 
-Backend constructs a strict AI prompt
+- Backend constructs a strict AI prompt
 
-Request is sent to Groq API
+- Request is sent to Groq API
 
-LLM generates optimized Java
+- LLM generates optimized Java
 
-Backend extracts clean output
+- Backend extracts clean output
 
-Frontend displays:
+###  Frontend displays:
 
-Refactored Java code
+- Refactored Java code
 
-Improvement summary
+- Improvement summary
 
-Average response time: 3–8 seconds (local setup).
+- Average response time: 3–8 seconds (local setup).
 
 ## Tech Stack
 
 ###  1.Backend
 
-*Java 17+*
+- *Java 17+*
 
-*HttpServer*
+- *HttpServer*
 
-*HttpClient*
+- *HttpClient*
 
-*REST Architecture*
+- *REST Architecture*
 
 ### 2.Frontend
 
-*Html*
+- *Html*
 
-*Modern CSS (Glass UI)*
+- *Modern CSS (Glass UI)*
 
-*Vanilla JavaScript*
+- *Vanilla JavaScript*
 
 ### 3.AI Infrastructure
 
-*LLaMA 3.3 70B*
+- *LLaMA 3.3 70B*
 
-*Hosted via Groq*
+- *Hosted via Groq*
 
 ## Local Development Setup
 
@@ -170,41 +170,41 @@ _private static final String API_KEY = "your_api_key_here";_
 javac *.java
 java Server
 
-Server runs at:
+*Server runs at:*
 
-http://localhost:8080
+**http://localhost:8080**
 
-Open index-1.html in your browser.
+# Open index-1.html in your browser.
 
 ## Security & Production Improvements
 
-Current version is optimized for development and demonstration.
+- Current version is optimized for development and demonstration.
 
-Planned upgrades:
+## Planned upgrades:
 
-Environment variable-based API key management
+- Environment variable-based API key management
 
-Proper JSON parsing (Gson / Jackson)
+- Proper JSON parsing (Gson / Jackson)
 
-Authentication layer
+- Authentication layer
 
-Rate limiting
+- Rate limiting
 
-Cloud deployment
+- Cloud deployment
 
-CI/CD pipeline
+- CI/CD pipeline
 
 ## Roadmap
 
-Web-based hosted version
+- Web-based hosted version
 
-Code complexity analysis dashboard
+- Code complexity analysis dashboard
 
-Automated unit test generation
+- Automated unit test generation
 
-GitHub pull request integration
+- GitHub pull request integration
 
-SaaS deployment model
+- SaaS deployment model
 
 ## Why CodeRefine Matters
 
