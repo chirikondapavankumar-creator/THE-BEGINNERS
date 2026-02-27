@@ -338,7 +338,7 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
   </section>
 
   <div class="err" id="errBox">
-    <span>⚠</span><span id="errMsg">Cannot reach server at localhost:8080.</span>
+    <span>⚠</span><span id="errMsg">Cannot reach server at localhost:3000.</span>
   </div>
 
   <section style="margin-bottom:0">
@@ -425,7 +425,7 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
     <div class="foot">
       <span class="foot-brand">CodeRefine</span>
       <div class="foot-info">
-        <div>Endpoint · <span>localhost:8080/refine</span></div>
+        <div>Endpoint · <span>localhost:3000/refine</span></div>
         <div>Model · <span>LLaMA 3.3 · 70B via Groq</span></div>
       </div>
     </div>
@@ -507,7 +507,7 @@ async function ping() {
   try {
     const ac = new AbortController();
     setTimeout(() => ac.abort(), 2500);
-    await fetch('http://localhost:8080/refine', { method:'OPTIONS', signal:ac.signal });
+    await fetch('http://localhost:3000/refine', { method:'OPTIONS', signal:ac.signal });
     srvDot.className = 'srv-dot on';
     srvLabel.textContent = 'Server Online';
     srv.className = 'srv online';
@@ -542,7 +542,7 @@ async function doRefine() {
   renderLineNums(outLineNums, 2);
 
   try {
-    const res = await fetch('http://localhost:8080/refine', {
+    const res = await fetch('http://localhost:3000/refine', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code })
@@ -578,11 +578,11 @@ async function doRefine() {
 
   } catch (err) {
     const msg = (err.message.includes('fetch') || err.message.includes('Failed'))
-      ? 'Cannot reach server at localhost:8080. Make sure your Java server is running.'
+      ? 'Cannot reach server at localhost:3000. Make sure your Java server is running.'
       : 'Error: ' + err.message;
     errMsg.textContent = msg;
     errBox.className = 'err show';
-    codeOut.innerHTML = '<span class="cmt">// Refinement failed.\n// Check that your Java server is running on port 8080.</span>';
+    codeOut.innerHTML = '<span class="cmt">// Refinement failed.\n// Check that your Java server is running on port 3000.</span>';
     codeOut.className = 'highlight-output';
     outStatus.textContent = 'Failed';
     srvDot.className = 'srv-dot';
@@ -631,4 +631,3 @@ codeIn.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
-
