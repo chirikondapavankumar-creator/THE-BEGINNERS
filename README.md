@@ -198,8 +198,6 @@ CI/CD pipeline
 
 Web-based hosted version
 
-Multi-language output (Java, C++, Python)
-
 Code complexity analysis dashboard
 
 Automated unit test generation
