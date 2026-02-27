@@ -1,5 +1,5 @@
 # THE-BEGINNERS
-# THE-BEGINNERS
+
 # AI Code Refiner
 
 ## Description
