@@ -1,8 +1,8 @@
 # CodeRefine
 
-*AI-Powered Java Code Optimization Platform*
+*AI-Powered Multi-Code Optimization Platform*
 
-*Transform raw code into production-grade Java using large language models.*
+*Transform raw code into industry-ready software in the language you choose..*
 
 ## What is CodeRefine?
 
