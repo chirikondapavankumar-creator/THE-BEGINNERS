@@ -229,6 +229,21 @@ textarea::placeholder { color: #252840; }
 .cmt { color: #546e7a; font-style: italic; }
 .ann { color: #ffcb6b; }
 
+.lang-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.lang-label { font-family:"JetBrains Mono",monospace; font-size:0.65rem; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-right:0.4rem; }
+.lang-btn { font-family:"JetBrains Mono",monospace; font-size:0.68rem; padding:0.38rem 0.9rem; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.4rem; }
+.lang-btn:hover { border-color:var(--bh); color:var(--text); background:rgba(255,255,255,0.04); }
+.lang-btn.active { border-color:rgba(201,168,76,0.5); color:var(--gold2); background:rgba(201,168,76,0.1); box-shadow:0 0 12px rgba(201,168,76,0.12); }
+
+.mode-tabs { display:flex; align-items:center; gap:0; margin-bottom:1.2rem; border:1px solid var(--border); border-radius:10px; overflow:hidden; width:fit-content; }
+.mode-tab { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.06em; padding:0.55rem 1.4rem; border:none; background:transparent; color:var(--text3); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.mode-tab:hover { color:var(--text2); background:rgba(255,255,255,0.03); }
+.mode-tab.active { background:rgba(201,168,76,0.12); color:var(--gold2); border-bottom:2px solid var(--gold); }
+.convert-bar { display:none; align-items:center; gap:0.7rem; margin-bottom:1.2rem; flex-wrap:wrap; }
+.convert-bar.show { display:flex; }
+.convert-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; }
+.convert-arrow { font-size:1rem; color:var(--gold); }
+
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #1e2240; border-radius: 99px; }
@@ -312,7 +327,7 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
       </a>
       <div class="nav-center">
         <span class="chip lit">Editor</span>
-        <span class="chip">Any Language → Java</span>
+        <span class="chip">Refine Any Language</span>
         <span class="chip">LLaMA 3.3 · 70B</span>
       </div>
       <div class="srv" id="srv">
@@ -327,18 +342,58 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
 
   <section class="hero">
     <div class="eyebrow"><div class="eyebrow-dot"></div>AI-Powered Code Optimization</div>
-    <h1 class="hero-title">Turn raw code into<br><em>production-grade</em> masterwork.</h1>
-    <p class="hero-sub">Paste code in any language. Our AI refactors it into clean, optimized, professional-grade Java.</p>
+    <h1 class="hero-title">Refine your code into<br><em>production-grade</em> masterwork.</h1>
+    <p class="hero-sub">Paste code in any language. Our AI refactors it into clean, optimized, production-grade code — in the same language.</p>
     <div class="hero-tags">
       <div class="htag">⬡ <span>Clean Code</span></div>
       <div class="htag">◈ <span>Big-O Optimization</span></div>
-      <div class="htag">◎ <span>OOP Patterns</span></div>
+      <div class="htag">◎ <span>Any Language</span></div>
       <div class="htag">✦ <span>Groq · Ultra-Fast</span></div>
     </div>
   </section>
 
   <div class="err" id="errBox">
     <span>⚠</span><span id="errMsg">Cannot reach server at localhost:3000.</span>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tabRefine" onclick="setMode('refine')">✦ Refine</button>
+    <button class="mode-tab" id="tabConvert" onclick="setMode('convert')">⇄ Convert</button>
+  </div>
+
+  <div class="convert-bar" id="convertBar">
+    <span class="convert-label">Convert from:</span>
+    <button class="lang-btn from-btn" data-lang="Python" onclick="setFromLang(this)">🐍 Python</button>
+    <button class="lang-btn from-btn" data-lang="Java" onclick="setFromLang(this)">☕ Java</button>
+    <button class="lang-btn from-btn" data-lang="JavaScript" onclick="setFromLang(this)">🟨 JavaScript</button>
+    <button class="lang-btn from-btn" data-lang="TypeScript" onclick="setFromLang(this)">🔷 TypeScript</button>
+    <button class="lang-btn from-btn" data-lang="C++" onclick="setFromLang(this)">⚙ C++</button>
+    <button class="lang-btn from-btn" data-lang="C#" onclick="setFromLang(this)">🔵 C#</button>
+    <button class="lang-btn from-btn" data-lang="Go" onclick="setFromLang(this)">🐹 Go</button>
+    <button class="lang-btn from-btn" data-lang="Rust" onclick="setFromLang(this)">🦀 Rust</button>
+    <span class="convert-arrow">→</span>
+    <span class="convert-label">To:</span>
+    <button class="lang-btn to-btn" data-lang="Java" onclick="setToLang(this)">☕ Java</button>
+    <button class="lang-btn to-btn" data-lang="Python" onclick="setToLang(this)">🐍 Python</button>
+    <button class="lang-btn to-btn" data-lang="JavaScript" onclick="setToLang(this)">🟨 JavaScript</button>
+    <button class="lang-btn to-btn" data-lang="TypeScript" onclick="setToLang(this)">🔷 TypeScript</button>
+    <button class="lang-btn to-btn" data-lang="C++" onclick="setToLang(this)">⚙ C++</button>
+    <button class="lang-btn to-btn" data-lang="C#" onclick="setToLang(this)">🔵 C#</button>
+    <button class="lang-btn to-btn" data-lang="Go" onclick="setToLang(this)">🐹 Go</button>
+    <button class="lang-btn to-btn" data-lang="Rust" onclick="setToLang(this)">🦀 Rust</button>
+  </div>
+
+  <div class="lang-bar" id="langBar">
+    <span class="lang-label">Language:</span>
+    <button class="lang-btn active" data-lang="auto" onclick="setLang(this)">⬡ Auto Detect</button>
+    <button class="lang-btn" data-lang="Java" onclick="setLang(this)">☕ Java</button>
+    <button class="lang-btn" data-lang="Python" onclick="setLang(this)">🐍 Python</button>
+    <button class="lang-btn" data-lang="JavaScript" onclick="setLang(this)">🟨 JavaScript</button>
+    <button class="lang-btn" data-lang="TypeScript" onclick="setLang(this)">🔷 TypeScript</button>
+    <button class="lang-btn" data-lang="C++" onclick="setLang(this)">⚙ C++</button>
+    <button class="lang-btn" data-lang="C#" onclick="setLang(this)">🔵 C#</button>
+    <button class="lang-btn" data-lang="Go" onclick="setLang(this)">🐹 Go</button>
+    <button class="lang-btn" data-lang="Rust" onclick="setLang(this)">🦀 Rust</button>
   </div>
 
   <section style="margin-bottom:0">
@@ -368,20 +423,20 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
       <div class="pane">
         <div class="pane-top">
           <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
-          <span class="pane-fname">output.java</span>
+          <span class="pane-fname" id="outFname">output (auto-detected)</span>
           <button class="btn-copy" id="cpyBtn" onclick="doCopy()">⎘ Copy</button>
           <span class="tag tag-ai">AI Refined</span>
         </div>
         <div class="code-area">
           <div class="line-nums" id="outLineNums"><span>1</span></div>
           <div class="code-input-wrap">
-            <div class="highlight-output empty" id="codeOut">// Your refined Java code will appear here...
+            <div class="highlight-output empty" id="codeOut">// Your refined code will appear here...
 //
 // The AI will:
-//   → Convert any language to Java
+//   → Detect your language automatically
 //   → Apply clean code principles
 //   → Optimize time & space complexity
-//   → Add professional Javadoc
+//   → Add proper documentation comments
 //   → Refactor structure & naming
 //   → Handle edge cases</div>
           </div>
@@ -434,6 +489,41 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
 
 <script>
 const G = id => document.getElementById(id);
+let selectedLang = "auto";
+let currentMode = "refine";
+let fromLang = "Python";
+let toLang = "Java";
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById("tabRefine").classList.toggle("active", mode === "refine");
+  document.getElementById("tabConvert").classList.toggle("active", mode === "convert");
+  document.getElementById("convertBar").classList.toggle("show", mode === "convert");
+  document.getElementById("langBar").style.display = mode === "refine" ? "" : "none";
+  btnTxt.textContent = mode === "refine" ? "Refine Code" : "Convert Code";
+  btnIco.textContent = mode === "refine" ? "✦" : "⇄";
+  outFname.textContent = mode === "refine" ? "output (auto-detected)" : "output." + getLangExt(toLang);
+}
+
+function setFromLang(btn) {
+  document.querySelectorAll(".from-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  fromLang = btn.dataset.lang;
+}
+
+function setToLang(btn) {
+  document.querySelectorAll(".to-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  toLang = btn.dataset.lang;
+  G("outFname").textContent = "output." + getLangExt(toLang);
+}
+
+function getLangExt(lang) {
+  const ext = {Java:"java",Python:"py",JavaScript:"js",TypeScript:"ts","C++":"cpp","C#":"cs",Go:"go",Rust:"rs"};
+  return ext[lang] || lang.toLowerCase();
+}
+
+
 const codeIn      = G('codeIn');
 const codeOut     = G('codeOut');
 const mainBtn     = G('mainBtn');
@@ -503,6 +593,17 @@ codeIn.addEventListener('input', () => {
 
 codeIn.addEventListener('scroll', () => { lineNums.scrollTop = codeIn.scrollTop; });
 
+function setLang(btn) {
+  document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  selectedLang = btn.dataset.lang;
+  const fname = G("outFname");
+  const ext = {Java:"java",Python:"py",JavaScript:"js",TypeScript:"ts","C++":"cpp","C#":"cs",Go:"go",Rust:"rs"};
+  fname.textContent = selectedLang === "auto"
+    ? "output (auto-detected)"
+    : "output." + (ext[selectedLang] || selectedLang.toLowerCase());
+}
+
 async function ping() {
   try {
     const ac = new AbortController();
@@ -523,7 +624,7 @@ function setLoading(on) {
   mainBtn.disabled = on;
   spin.style.display = on ? 'block' : 'none';
   btnIco.style.display = on ? 'none' : 'inline';
-  btnTxt.textContent = on ? 'Refining…' : 'Refine Code';
+  btnTxt.textContent = on ? (currentMode === 'refine' ? 'Refining…' : 'Converting…') : (currentMode === 'refine' ? 'Refine Code' : 'Convert Code');
   outDot.classList.toggle('on', on);
   outStatus.textContent = on ? 'AI is analyzing…' : 'Ready';
 }
@@ -545,7 +646,7 @@ async function doRefine() {
     const res = await fetch('http://localhost:3000/refine', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code, mode: currentMode, language: selectedLang === "auto" ? null : selectedLang, fromLang, toLang })
     });
 
     if (!res.ok) throw new Error('Server responded ' + res.status);
@@ -604,11 +705,12 @@ function doCopy() {
 
 function doClear() {
   codeIn.value = '';
-  codeOut.innerHTML = '// Your refined Java code will appear here...\n//\n// The AI will:\n//   \u2192 Convert any language to Java\n//   \u2192 Apply clean code principles\n//   \u2192 Optimize time &amp; space complexity\n//   \u2192 Add professional Javadoc\n//   \u2192 Refactor structure &amp; naming\n//   \u2192 Handle edge cases';
+  codeOut.innerHTML = '// Your refined code will appear here...\n//\n// The AI will:\n//   \u2192 Convert any language to Java\n//   \u2192 Apply clean code principles\n//   \u2192 Optimize time &amp; space complexity\n//   \u2192 Add professional Javadoc\n//   \u2192 Refactor structure &amp; naming\n//   \u2192 Handle edge cases';
   codeOut.className = 'highlight-output empty';
   chars.textContent = '0 chars';
   lines.textContent = '0 lines';
   outStatus.textContent = 'Waiting for input';
+  btnTxt.textContent = currentMode === 'refine' ? 'Refine Code' : 'Convert Code';
   outLines.textContent = '';
   errBox.className = 'err';
   impPanel.className = 'imp';
