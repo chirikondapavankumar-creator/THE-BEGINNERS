@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -26,6 +26,20 @@
   --text2:    #8892b0;
   --text3:    #3d4466;
   --error:    #ff6b6b;
+}
+
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg:       #f4f5fb;
+  --bg2:      #eaecf5;
+  --bg3:      #ffffff;
+  --border:   rgba(0,0,0,0.09);
+  --bh:       rgba(0,0,0,0.15);
+  --text:     #1a1d2e;
+  --text2:    #4a5180;
+  --text3:    #9198bb;
+  --error:    #ef4444;
 }
 
 html { scroll-behavior: smooth; }
@@ -58,6 +72,9 @@ header {
   backdrop-filter: blur(28px) saturate(1.4);
   background: rgba(7,8,16,0.82);
 }
+[data-theme="light"] header {
+  background: rgba(244,245,251,0.90);
+}
 
 .nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .brand { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; }
@@ -76,7 +93,7 @@ header {
 .brand-name {
   font-family: 'DM Serif Display', serif;
   font-size: 1.35rem;
-  background: linear-gradient(135deg, #fff 20%, var(--gold2) 100%);
+  background: linear-gradient(135deg, var(--text) 20%, var(--gold2) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
@@ -119,16 +136,23 @@ header {
 
 .hero-title {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(2.6rem, 5.5vw, 4.6rem);
-  line-height: 1.1; letter-spacing: -0.025em;
-  margin-bottom: 1.3rem; max-width: 820px;
+  font-size: clamp(2.8rem, 5.8vw, 5rem);
+  line-height: 1.08; letter-spacing: -0.03em;
+  margin-bottom: 1.3rem; max-width: 860px;
   margin-left: auto; margin-right: auto;
+  color: var(--text);
 }
 
 .hero-title em {
   font-style: italic;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 55%, #fff 100%);
+  background: linear-gradient(135deg, #b8860b 0%, #d4a017 30%, #e8cc80 60%, #c9a84c 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(201,168,76,0.35));
+}
+[data-theme="light"] .hero-title em {
+  background: linear-gradient(135deg, #92650a 0%, #b8860b 35%, #c9a84c 65%, #8B6914 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 1px 4px rgba(146,101,10,0.25));
 }
 
 .hero-sub { font-size: 0.98rem; color: var(--text2); font-weight: 300; max-width: 460px; margin: 0 auto 2.2rem; line-height: 1.75; }
@@ -244,6 +268,129 @@ textarea::placeholder { color: #252840; }
 .convert-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; }
 .convert-arrow { font-size:1rem; color:var(--gold); }
 
+
+.theme-toggle {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: var(--text2);
+}
+.theme-toggle:hover { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.07); }
+
+/* AI TUTOR PANEL */
+.tutor-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.3);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.tutor-overlay.show { opacity: 1; pointer-events: all; }
+
+.tutor-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(480px, 95vw);
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  z-index: 501;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.38s cubic-bezier(.16,1,.3,1);
+  box-shadow: -20px 0 60px rgba(0,0,0,0.15);
+}
+.tutor-panel.show { transform: translateX(0); }
+
+.tutor-hdr {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  flex-shrink: 0;
+}
+.tutor-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(167,139,250,0.12);
+  border: 1px solid rgba(167,139,250,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.tutor-hdr-info { flex: 1; }
+.tutor-hdr-info h3 { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.tutor-hdr-info p { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--text3); margin-top: 0.1rem; }
+.tutor-close {
+  width: 30px; height: 30px; border-radius: 7px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); cursor: pointer; font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.tutor-close:hover { background: rgba(255,0,0,0.07); color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+.tutor-body { flex: 1; overflow-y: auto; padding: 1.2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+
+.tutor-loading {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; flex: 1; color: var(--text3);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+}
+.tutor-ring {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(167,139,250,0.15);
+  border-top-color: #a78bfa;
+  border-radius: 50%; animation: rot 0.8s linear infinite;
+}
+
+.tutor-section {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  animation: up 0.35s cubic-bezier(.16,1,.3,1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.tutor-section-hdr {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.75rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold);
+  background: rgba(201,168,76,0.04);
+  font-weight: 500;
+}
+.tutor-section-body {
+  padding: 1.1rem 1.2rem;
+  font-size: 0.85rem;
+  line-height: 2;
+  color: var(--text2);
+  white-space: pre-wrap;
+  letter-spacing: 0.01em;
+}
+.tutor-section-body p { margin-bottom: 0.6rem; }
+
+/* Style bullet points inside tutor */
+.tutor-section-body li,
+.tutor-point {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.83rem;
+  line-height: 1.75;
+  color: var(--text2);
+}
+.tutor-section-body li:last-child,
+.tutor-point:last-child { border-bottom: none; }
+
+.btn-explain {
+  font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.88rem;
+  padding: 0.82rem 1.8rem; border-radius: 10px;
+  border: 1px solid rgba(167,139,250,0.4); background: transparent;
+  color: #a78bfa; cursor: pointer;
+  display: none; align-items: center; gap: 0.55rem; transition: all 0.2s;
+}
+.btn-explain:hover { background: rgba(167,139,250,0.08); transform: translateY(-2px); }
+.btn-explain:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.spin-p { width:13px; height:13px; border:2px solid rgba(167,139,250,.2); border-top-color:#a78bfa; border-radius:50%; animation:rot .65s linear infinite; display:none; }
+
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #1e2240; border-radius: 99px; }
@@ -318,6 +465,25 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
 <div class="amb amb-2"></div>
 <div class="amb amb-3"></div>
 
+
+<div class="tutor-overlay" id="tutorOverlay" onclick="closeTutor()"></div>
+<div class="tutor-panel" id="tutorPanel">
+  <div class="tutor-hdr">
+    <div class="tutor-icon">🎓</div>
+    <div class="tutor-hdr-info">
+      <h3>AI Code Tutor</h3>
+      <p>LLAMA 3.3 · 70B · EXPLAINING YOUR CODE</p>
+    </div>
+    <button class="tutor-close" onclick="closeTutor()">✕</button>
+  </div>
+  <div class="tutor-body" id="tutorBody">
+    <div class="tutor-loading">
+      <div class="tutor-ring"></div>
+      <span>Analyzing your code…</span>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="wrap">
     <nav class="nav">
@@ -330,6 +496,7 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
         <span class="chip">Refine Any Language</span>
         <span class="chip">LLaMA 3.3 · 70B</span>
       </div>
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
       <div class="srv" id="srv">
         <div class="srv-dot" id="srvDot"></div>
         <span id="srvLabel">Connecting…</span>
@@ -459,6 +626,7 @@ footer { border-top:1px solid var(--border); padding:1.8rem 0; margin-top:1.5rem
       <span id="btnTxt">Refine Code</span>
       <div class="spin" id="spin"></div>
     </button>
+    <button class="btn-explain" id="explainBtn" onclick="doExplain()"><span id="eIco">🎓</span><span id="eTxt">Explain Code</span><div class="spin-p" id="eSpin"></div></button>
     <div class="kbd"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
   </div>
 
@@ -639,6 +807,8 @@ async function doRefine() {
   codeOut.innerHTML = '<span class="cmt">// Analyzing and refining your code…\n// This usually takes 3–8 seconds.</span>';
   codeOut.className = 'highlight-output';
   cpyBtn.style.display = 'none';
+  document.getElementById('explainBtn').style.display = 'none';
+  lastRefinedCode = '';
   outLines.textContent = '';
   renderLineNums(outLineNums, 2);
 
@@ -668,6 +838,8 @@ async function doRefine() {
     outStatus.textContent = 'Refinement complete ✓';
     outDot.classList.remove('on');
     cpyBtn.style.display = 'block';
+    lastRefinedCode = codeSection;
+    document.getElementById('explainBtn').style.display = 'flex';
     srvDot.className = 'srv-dot on';
     srvLabel.textContent = 'Server Online';
     srv.className = 'srv online';
@@ -715,10 +887,127 @@ function doClear() {
   errBox.className = 'err';
   impPanel.className = 'imp';
   cpyBtn.style.display = 'none';
+  document.getElementById('explainBtn').style.display = 'none';
+  lastRefinedCode = '';
   inDot.classList.remove('on');
   outDot.classList.remove('on');
   renderLineNums(lineNums, 1);
   renderLineNums(outLineNums, 1);
+}
+
+
+// THEME
+let isDark = false;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+}
+
+// TUTOR
+let lastRefinedCode = '';
+
+function openTutor() {
+  document.getElementById('tutorOverlay').classList.add('show');
+  document.getElementById('tutorPanel').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeTutor() {
+  document.getElementById('tutorOverlay').classList.remove('show');
+  document.getElementById('tutorPanel').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+async function doExplain() {
+  if (!lastRefinedCode) return;
+  const btn = document.getElementById('explainBtn');
+  const ico = document.getElementById('eIco');
+  const txt = document.getElementById('eTxt');
+  const sp  = document.getElementById('eSpin');
+
+  btn.disabled = true;
+  sp.style.display = 'block';
+  ico.style.display = 'none';
+  txt.textContent = 'Explaining…';
+
+  document.getElementById('tutorBody').innerHTML = `
+    <div class="tutor-loading">
+      <div class="tutor-ring"></div>
+      <span>Analyzing your refined code…</span>
+    </div>`;
+  openTutor();
+
+  try {
+    const res = await fetch('http://localhost:3000/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: lastRefinedCode })
+    });
+    if (!res.ok) throw new Error('Server responded ' + res.status);
+    const data = await res.json();
+    renderExplanation(data.explanation || '');
+  } catch(e) {
+    document.getElementById('tutorBody').innerHTML = `
+      <div class="tutor-section">
+        <div class="tutor-section-hdr"><span>⚠</span> Error</div>
+        <div class="tutor-section-body">Could not load explanation: ${e.message}\nMake sure your server has a /explain endpoint.</div>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+    sp.style.display = 'none';
+    ico.style.display = 'inline';
+    txt.textContent = 'Explain Code';
+  }
+}
+
+function renderExplanation(text) {
+  const defs = [
+    { marker: '##OVERVIEW##',     icon: '📋', title: 'Overview' },
+    { marker: '##BREAKDOWN##',    icon: '🔍', title: 'Code Breakdown' },
+    { marker: '##IMPROVEMENTS##', icon: '⚡', title: 'Why These Changes?' },
+    { marker: '##CONCEPTS##',     icon: '📚', title: 'Key Concepts' },
+    { marker: '##TIPS##',         icon: '💡', title: 'Tips to Remember' },
+  ];
+
+  let sections = [];
+  for (let i = 0; i < defs.length; i++) {
+    const { marker, icon, title } = defs[i];
+    const start = text.indexOf(marker);
+    if (start === -1) continue;
+    const contentStart = start + marker.length;
+    const nexts = defs.slice(i+1).map(d => text.indexOf(d.marker)).filter(x => x > start);
+    const end = nexts.length ? Math.min(...nexts) : text.length;
+    const content = text.slice(contentStart, end).trim();
+    if (content) sections.push({ icon, title, content });
+  }
+
+  if (!sections.length) sections = [{ icon: '📋', title: 'Explanation', content: text.trim() }];
+
+  const body = document.getElementById('tutorBody');
+  body.innerHTML = sections.map(s => {
+    // Format content: split by lines, wrap bullet lines nicely
+    const formatted = s.content
+      .split('\n')
+      .map(line => {
+        line = line.trim();
+        if (!line) return '';
+        if (line.match(/^[-•*]\s/)) {
+          return `<div class="tutor-point"><span style="color:var(--gold);flex-shrink:0">▸</span><span>${line.slice(2)}</span></div>`;
+        }
+        if (line.match(/^\d+\.\s/)) {
+          const num = line.match(/^(\d+)\.\s/)[1];
+          const text = line.replace(/^\d+\.\s/, '');
+          return `<div class="tutor-point"><span style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.7rem;flex-shrink:0;min-width:18px">${num}.</span><span>${text}</span></div>`;
+        }
+        return `<p style="margin-bottom:0.5rem">${line}</p>`;
+      })
+      .join('');
+    return `
+    <div class="tutor-section">
+      <div class="tutor-section-hdr"><span>${s.icon}</span> ${s.title}</div>
+      <div class="tutor-section-body">${formatted}</div>
+    </div>`;
+  }).join('');
 }
 
 codeIn.addEventListener('keydown', e => {
