@@ -29,11 +29,11 @@
 
 - CodeRefine aims to reduce technical debt before it even reaches production.
 
-### Key Features
-## Multi-Language Input → Java Output
+# Key Features
 
-Paste code in Python, C++, JavaScript, C#, or any language.
-Receive optimized Java.
+##Universal Language Transformation
+
+- CodeRefine supports any programming language as input and allows flexible output modes.
 
 ## AI-Driven Refactoring
 
@@ -114,13 +114,13 @@ Receive optimized Java.
 
 - Request is sent to Groq API
 
-- LLM generates optimized Java
+- LLM generates optimized code
 
 - Backend extracts clean output
 
 ###  Frontend displays:
 
-- Refactored Java code
+- Refactored required code
 
 - Improvement summary
 
