@@ -220,4 +220,4 @@ java Server
 
 - CodeRefine introduces AI-assisted code refinement as a service — accelerating development while enforcing quality.
 
-#  This project demonstrates real-world AI engineering, full-stack integration, and scalable product thinking.
+**This project demonstrates real-world AI engineering, full-stack integration, and scalable product thinking.**
