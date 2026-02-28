@@ -17,8 +17,9 @@ public class Main {
             codeBuilder.append(line).append("\n");
         }
 
+        // Pass null as language → AI will auto-detect
         AIServices aiService = new AIServices();
-        String refinedCode = aiService.refineCode(codeBuilder.toString());
+        String refinedCode = aiService.refineCode(codeBuilder.toString(), null);
 
         System.out.println("\n--- AI Response ---");
         System.out.println(refinedCode);
