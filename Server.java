@@ -1,67 +1,119 @@
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
 
+/**
+ * CodeRefine HTTP Server.
+ * Listens on port 3000 and exposes a /refine endpoint that accepts
+ * a JSON body {"code":"..."} and returns {"result":"..."} with refined Java.
+ */
 public class Server {
 
+    private static final int    PORT           = 3000;
+    private static final int    MAX_BODY_BYTES = 50_000; // 50 KB input cap
+    private static final int    THREAD_POOL    = 4;
+
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(3000), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/refine", new CodeHandler());
-        server.setExecutor(null);
+        server.setExecutor(Executors.newFixedThreadPool(THREAD_POOL));
         server.start();
-        System.out.println("✅ Server started at http://localhost:3000");
+        System.out.println("✅ CodeRefine server started at http://localhost:" + PORT);
+        System.out.println("   GROQ_API_KEY set: " + (System.getenv("GROQ_API_KEY") != null ? "YES" : "NO ⚠️"));
     }
 
+    // ─── Request handler ──────────────────────────────────────────────────────
+
     static class CodeHandler implements HttpHandler {
+
+        private final AIServices aiService = new AIServices();
+
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            // CORS headers — required for browser requests
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin",  "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST, OPTIONS");
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
-            if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+            // Handle preflight
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 return;
             }
 
-            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-                try {
-                    String requestBody = new String(
-                        exchange.getRequestBody().readAllBytes(),
-                        StandardCharsets.UTF_8
-                    );
+            // Only accept POST
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendJson(exchange, 405, "{\"error\":\"Method not allowed. Use POST.\"}");
+                return;
+            }
 
-                    System.out.println("Received request body: " + requestBody.substring(0, Math.min(100, requestBody.length())));
-
-                    String userCode = extractCodeFromJson(requestBody);
-
-                    if (userCode == null || userCode.isBlank()) {
-                        sendResponse(exchange, 400, "{\"error\":\"Missing code field.\"}");
-                        return;
-                    }
-
-                    AIServices aiService = new AIServices();
-                    String refinedCode = aiService.refineCode(userCode);
-
-                    String jsonResponse = "{\"result\":\"" + escapeJson(refinedCode) + "\"}";
-                    sendResponse(exchange, 200, jsonResponse);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    sendResponse(exchange, 500, "{\"error\":\"" + e.getMessage() + "\"}");
+            try {
+                // Read and size-check body
+                byte[] rawBytes = exchange.getRequestBody().readAllBytes();
+                if (rawBytes.length > MAX_BODY_BYTES) {
+                    sendJson(exchange, 413, "{\"error\":\"Request body too large. Max 50KB.\"}");
+                    return;
                 }
+
+                String requestBody = new String(rawBytes, StandardCharsets.UTF_8).trim();
+                System.out.println("📥 Request (" + rawBytes.length + " bytes): "
+                    + requestBody.substring(0, Math.min(120, requestBody.length())));
+
+                // Extract and validate code field
+                String userCode = extractFieldFromJson(requestBody, "code");
+                String language = extractFieldFromJson(requestBody, "language");
+
+                if (userCode == null) {
+                    sendJson(exchange, 400, "{\"error\":\"Missing or malformed \\\"code\\\" field in JSON body.\"}");
+                    return;
+                }
+                if (userCode.isBlank()) {
+                    sendJson(exchange, 400, "{\"error\":\"The \\\"code\\\" field is empty.\"}");
+                    return;
+                }
+
+                // Call AI service
+                String refinedCode = aiService.refineCode(userCode, language);
+
+                // Detect error strings returned from AIServices
+                if (refinedCode.startsWith("Error:") || refinedCode.startsWith("API error")) {
+                    System.err.println("⚠️  AI service returned error: " + refinedCode);
+                    sendJson(exchange, 502, "{\"error\":\"" + escapeJson(refinedCode) + "\"}");
+                    return;
+                }
+
+                String jsonResponse = "{\"result\":\"" + escapeJson(refinedCode) + "\"}";
+                sendJson(exchange, 200, jsonResponse);
+                System.out.println("✅ Refinement complete — " + refinedCode.length() + " chars returned.");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendJson(exchange, 500, "{\"error\":\"Internal server error: " + escapeJson(e.getMessage()) + "\"}");
             }
         }
 
-        private String extractCodeFromJson(String json) {
-            String key = "\"code\"";
-            int keyIdx = json.indexOf(key);
+        // ─── JSON helpers ─────────────────────────────────────────────────────
+
+        /**
+         * Manually extracts the value of the "code" key from a JSON string.
+         * Handles standard JSON escape sequences.
+         *
+         * @param json the raw JSON request body
+         * @return the unescaped code string, or null if not found / malformed
+         */
+        private String extractFieldFromJson(String json, String field) {
+            if (json == null || json.isBlank()) return null;
+
+            String key    = "\"" + field + "\"";
+            int keyIdx    = json.indexOf(key);
             if (keyIdx == -1) return null;
 
-            int colonIdx = json.indexOf(':', keyIdx + key.length());
+            int colonIdx  = json.indexOf(':', keyIdx + key.length());
             if (colonIdx == -1) return null;
 
             int openQuote = json.indexOf('"', colonIdx + 1);
@@ -92,7 +144,11 @@ public class Server {
             return sb.toString();
         }
 
+        /**
+         * Escapes a string for safe embedding inside a JSON string value.
+         */
         private String escapeJson(String text) {
+            if (text == null) return "";
             return text
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
@@ -101,10 +157,13 @@ public class Server {
                 .replace("\t", "\\t");
         }
 
-        private void sendResponse(HttpExchange exchange, int code, String body) throws IOException {
+        /**
+         * Sends a UTF-8 encoded JSON response with the given HTTP status code.
+         */
+        private void sendJson(HttpExchange exchange, int statusCode, String body) throws IOException {
             byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(code, bytes.length);
+            exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+            exchange.sendResponseHeaders(statusCode, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(bytes);
             }
